@@ -1,3 +1,5 @@
+'use strict';
+
 const slides = [
   {
     src: "https://images.pexels.com/photos/624015/pexels-photo-624015.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
@@ -16,35 +18,40 @@ const slides = [
     alt: "landscape4",
   },
 ];
+const slideImg = document.querySelector('img');
+const [prevBtn, nextBtn] = document.querySelectorAll('.navBtn');
 
-let currentSlideIndex = 0;
 
-// Встановити в якості початково зображення з slides[0]
-const slideImg = document.querySelector("img");
-updateSlideImage(currentSlideIndex);
 
-const [prevBtn, nextBtn] = document.querySelectorAll(".navBtn");
+try {
+  // Виносимо відповідальність за обчислення для слайдера на клас
+  const slider = new Slider(slides);
 
-function nextSlideHandler() {
-  //   if (currentSlideIndex < slides.length - 1) {
-  //     currentSlideIndex++;
-  //   } else {
-  //     currentSlideIndex = 0;
-  //   }
-  currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-  updateSlideImage(currentSlideIndex);
-}
+  updateSlideImage(slider.currentSlide);
 
-nextBtn.addEventListener("click", nextSlideHandler);
+  function nextSlideHandler() {
+    slider.incSlideIndex();
+    updateSlideImage(slider.currentSlide);
+  }
+  nextBtn.addEventListener('click', nextSlideHandler);
 
-function prevSlideHandler() {
-  currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-  updateSlideImage(currentSlideIndex);
-}
+  function prevSlideHandler() {
+    slider.decSlideIndex();
+    updateSlideImage(slider.currentSlide);
+  }
+  prevBtn.addEventListener('click', prevSlideHandler);
 
-prevBtn.addEventListener("click", prevSlideHandler);
+  function updateSlideImage(currentSlide) {
+    // currentSlide - об'єкт {src, alt}
+    slideImg.src = currentSlide.src;
+    slideImg.alt = currentSlide.alt;
 
-function updateSlideImage(currentSlideIndex) {
-  slideImg.src = slides[currentSlideIndex].src;
-  slideImg.alt = slides[currentSlideIndex].alt;
+    slideImg.onerror = () => {
+      slideImg.src =
+        'https://kaverisias.com/kv-app/uploads/2018/01/catalog-default-img.gif';
+    };
+  }
+} catch (e) {
+  slideImg.src =
+    'https://kaverisias.com/kv-app/uploads/2018/01/catalog-default-img.gif';
 }
